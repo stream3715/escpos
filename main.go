@@ -6,8 +6,6 @@ import (
 	"image"
 	"io"
 	"math"
-
-	iconv "github.com/djimenez/iconv-go"
 )
 
 type Style struct {
@@ -144,6 +142,7 @@ func (e *Escpos) Write(data string) (int, error) {
 	return e.WriteRaw([]byte(data))
 }
 
+/*
 // WriteGBK writes a string to the printer using GBK encoding
 func (e *Escpos) WriteGBK(data string) (int, error) {
 	gbk, err := iconv.ConvertString(data, "utf-8", "gbk")
@@ -161,6 +160,7 @@ func (e *Escpos) WriteWEU(data string) (int, error) {
 	}
 	return e.Write(weu)
 }
+*/
 
 // Sets the printer to print Bold text.
 func (e *Escpos) Bold(p bool) *Escpos {
