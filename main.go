@@ -3,10 +3,11 @@ package escpos
 import (
 	"bufio"
 	"fmt"
-	"github.com/qiniu/iconv"
 	"image"
 	"io"
 	"math"
+
+	iconv "github.com/djimenez/iconv-go"
 )
 
 type Style struct {
@@ -145,23 +146,19 @@ func (e *Escpos) Write(data string) (int, error) {
 
 // WriteGBK writes a string to the printer using GBK encoding
 func (e *Escpos) WriteGBK(data string) (int, error) {
-	cd, err := iconv.Open("gbk", "utf-8")
+	gbk, err := iconv.ConvertString(data, "utf-8", "gbk")
 	if err != nil {
 		return 0, err
 	}
-	defer cd.Close()
-	gbk := cd.ConvString(data)
 	return e.Write(gbk)
 }
 
 // WriteWEU writes a string to the printer using Western European encoding
 func (e *Escpos) WriteWEU(data string) (int, error) {
-	cd, err := iconv.Open("cp850", "utf-8")
+	weu, err := iconv.ConvertString(data, "utf-8", "cp850")
 	if err != nil {
 		return 0, err
 	}
-	defer cd.Close()
-	weu := cd.ConvString(data)
 	return e.Write(weu)
 }
 
@@ -433,15 +430,15 @@ func (e *Escpos) MotionUnits(x, y uint8) (int, error) {
 
 // Feeds the paper to the end and performs a Cut. In the ESC/POS Command Manual there is also PartialCut and FullCut documented, but it does exactly the same.
 func (e *Escpos) Cut() (int, error) {
-	return e.WriteRaw([]byte{gs, 'V', 'A', '0'})
+	return e.WriteRaw([]byte{gs, 'V', 'A', 0x00})
 }
 
 // Helpers
 func boolToByte(b bool) byte {
 	if b {
-		return '1'
+		return 0x01
 	}
-	return '0'
+	return 0x00
 }
 func onlyDigits(s string) bool {
 	for _, c := range s {
